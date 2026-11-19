@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beyond The Headset: Community or Isolation?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAE7F7; --surface:#FFFFFF; --ink:#1D1A4A; --muted:#55527C;
+  --blue:#3544F0; --yellow:#FFC83D; --mint:#6FDCBF; --line:#C9C4E6;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15133A; --surface:#211E57; --ink:#F1EFFF; --muted:#B5B1E3;
+    --blue:#8C97FF; --yellow:#FFC83D; --mint:#6FDCBF; --line:#3B3880;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15133A; --surface:#211E57; --ink:#F1EFFF; --muted:#B5B1E3;
+  --blue:#8C97FF; --yellow:#FFC83D; --mint:#6FDCBF; --line:#3B3880;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.6 "Figtree",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Figtree",system-ui,sans-serif;line-height:1.05;margin:0}
+.wrap{max-width:62rem;margin:0 auto;padding:0 1.25rem}
+a:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+
+[hidden]{display:none!important}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:20}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:19;background:var(--bg);border-bottom:2px solid var(--ink)}
+.tabs ul{list-style:none;margin:0;padding:.7rem 1.25rem;display:flex;gap:.5rem;overflow-x:auto;white-space:nowrap;scrollbar-width:none;max-width:62rem;margin-inline:auto}
+.tabs ul::-webkit-scrollbar{display:none}
+.tabs a{display:block;color:var(--ink);text-decoration:none;font-weight:600;font-size:.98rem;padding:.55rem 1rem;border:2px solid var(--ink);border-radius:2rem;background:var(--surface);min-height:44px;line-height:1.5}
+.tabs a:hover{background:var(--yellow);color:#1D1A4A}
+.tabs a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+/* Hero */
+.hero{padding:3rem 0 2.5rem}
+.hero h1{font-size:clamp(2.6rem,9vw,5.5rem);font-weight:800;letter-spacing:-.03em;max-width:12ch}
+.hero h1 span{display:block;font-weight:500;color:var(--blue)}
+.tagline{max-width:38rem;font-size:1.2rem;color:var(--muted);margin:1.25rem 0 0}
+.tag{display:inline-block;background:var(--yellow);color:#1D1A4A;font-weight:600;font-size:.95rem;padding:.3rem .8rem;border-radius:2rem;margin-bottom:1.25rem}
+
+/* Lobby */
+.lobby{background:var(--surface);border:2px solid var(--ink);border-radius:1.25rem;padding:1rem 1rem 1.25rem;margin-top:2.25rem;max-width:40rem}
+.lobby svg{width:100%;height:auto;display:block}
+.lobby label{display:flex;justify-content:space-between;font-weight:600;margin-top:.5rem;font-size:.95rem}
+.lobby input[type=range]{width:100%;accent-color:var(--blue);margin:.5rem 0}
+#state{margin:.25rem 0 0;color:var(--muted);min-height:1.6em}
+.room{fill:none;stroke:var(--line);stroke-width:2;stroke-dasharray:5 5}
+.link{stroke:var(--blue);stroke-width:2.5;stroke-linecap:round}
+
+/* Question */
+.question{padding:3rem 0}
+.question .card{background:var(--blue);color:#fff;border-radius:1.5rem;padding:clamp(1.5rem,5vw,3.5rem)}
+:root[data-theme="dark"] .question .card{background:var(--blue);color:#15133A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .question .card{color:#15133A}}
+.question h2{font-size:clamp(1.8rem,5vw,3.2rem);font-weight:800;letter-spacing:-.02em;max-width:22ch}
+.question p{margin:1rem 0 0;font-weight:600}
+
+/* Perspectives */
+.persp{padding:2rem 0 3rem}
+.persp>.wrap>h2{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;letter-spacing:-.02em}
+.persp>.wrap>p{color:var(--muted);max-width:36rem;margin:.75rem 0 2rem}
+.chat{display:flex;flex-direction:column;gap:1.5rem}
+.msg{max-width:42rem;background:var(--surface);border:2px solid var(--ink);border-radius:1.5rem 1.5rem 1.5rem .35rem;padding:1.5rem}
+.msg.right{align-self:flex-end;border-radius:1.5rem 1.5rem .35rem 1.5rem}
+.who{display:inline-block;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.05rem;padding:.2rem .85rem;border-radius:2rem;color:#1D1A4A;margin-bottom:.9rem}
+.s .who{background:var(--mint)} .p .who{background:var(--yellow)} .t .who{background:#B9BEFF}
+.msg h3{font-size:clamp(1.3rem,3.4vw,1.75rem);font-weight:800;letter-spacing:-.01em}
+.msg h4{margin:1.1rem 0 .2rem;font-size:1rem;color:var(--muted);font-weight:600}
+.msg p{margin:0}
+
+/* Verdict + AI */
+.verdict{padding:1rem 0 3rem}
+.verdict .card{background:var(--yellow);color:#1D1A4A;border:2px solid var(--ink);border-radius:1.5rem;padding:clamp(1.5rem,5vw,3.5rem)}
+.verdict h2{font-size:clamp(2rem,6vw,3.4rem);font-weight:800;letter-spacing:-.02em;margin-bottom:1rem}
+.verdict p{font-size:clamp(1.1rem,2.6vw,1.35rem);line-height:1.55;max-width:44rem;margin:0}
+.ai{padding:1rem 0 3rem}
+.ai h2{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;letter-spacing:-.02em;margin-bottom:1.5rem}
+.ai .grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr))}
+.ai .box{background:var(--surface);border:2px solid var(--ink);border-radius:1.25rem;padding:1.5rem}
+.ai h3{font-size:1.4rem;font-weight:800;margin-bottom:.6rem}
+.ai .box p{margin:0}
+/* Vote */
+.vote{padding:1rem 0 3.5rem}
+.vote h2{font-size:clamp(1.7rem,5vw,2.6rem);font-weight:800}
+.vote p{color:var(--muted);max-width:34rem}
+.opts{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem}
+.opts button{font:600 1rem "Figtree",sans-serif;color:var(--ink);background:var(--surface);border:2px solid var(--ink);border-radius:2rem;padding:.7rem 1.3rem;cursor:pointer;min-height:44px}
+.opts button[aria-pressed="true"]{background:var(--yellow);color:#1D1A4A}
+#result{margin-top:1rem;font-weight:600;min-height:1.6em}
+footer{border-top:2px solid var(--line);padding:1.5rem 0 2rem;color:var(--muted);font-size:.95rem}
+/* Animations (off when the visitor prefers reduced motion) */
+@media (prefers-reduced-motion:no-preference){
+  [data-v]:not([hidden]){animation:viewIn .45s ease-out backwards}
+  .tag{animation:wiggle 1.2s .5s ease-in-out backwards}
+  .tagline{animation:viewIn .7s .25s ease-out backwards}
+  .lobby{animation:pop .7s .4s cubic-bezier(.2,1.3,.4,1) backwards}
+  .question .card,.verdict .card,.label .sheet,.dl{animation:pop .6s cubic-bezier(.2,1.3,.4,1) backwards}
+  .chat .msg{animation:pop .6s cubic-bezier(.2,1.3,.4,1) backwards}
+  .chat .msg:nth-child(2){animation-delay:.18s}
+  .chat .msg:nth-child(3){animation-delay:.36s}
+  .cards .fc,.ai .box,.jar,.roles button{animation:viewIn .5s ease-out backwards}
+  .cards .fc:nth-child(2),.ai .box:nth-child(2),.jar:nth-child(2){animation-delay:.12s}
+  .cards .fc:nth-child(3){animation-delay:.24s}
+  .cards .fc:nth-child(4){animation-delay:.36s}
+  .qr{animation:pulse 2.4s ease-in-out infinite}
+  .msg,.fc,.ai .box,.tabs a,.glass{transition:transform .2s ease,background .2s ease}
+  .msg:hover,.ai .box:hover{transform:translateY(-4px)}
+  .fc:hover{transform:translateY(-4px) rotate(-1deg)}
+  .tabs a:hover{transform:translateY(-2px)}
+  .jar:hover .glass{transform:translateY(-4px)}
+  .jar:active .glass{transform:scale(.97)}
+  @keyframes viewIn{from{opacity:0;transform:translateY(18px)}}
+  @keyframes pop{from{opacity:0;transform:translateY(24px) scale(.95)}}
+  @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+  @keyframes pulse{50%{transform:scale(1.04)}}
+}
+/* Locked vote */
+.jar:disabled{cursor:default}
+.jar:disabled:hover .glass{transform:none}
+.roles button:disabled{cursor:default}
+.roles button:disabled:not([aria-pressed="true"]){opacity:.45}
+/* Flip cards */
+.flips{padding:1rem 0 3rem}
+.flips h2{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;letter-spacing:-.02em}
+.flips .wrap>p{color:var(--muted);max-width:36rem;margin:.75rem 0 1.75rem}
+.cards{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}
+.fc{perspective:1000px;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.fc-in{display:grid;transition:transform .5s;transform-style:preserve-3d}
+.fc[aria-pressed="true"] .fc-in{transform:rotateY(180deg)}
+.face{grid-area:1/1;-webkit-backface-visibility:hidden;backface-visibility:hidden;border:2px solid var(--ink);border-radius:1.25rem;padding:1.25rem;min-height:14rem;display:flex;flex-direction:column;gap:.6rem}
+.front{background:var(--surface)}
+.back{background:var(--mint);color:#1D1A4A;transform:rotateY(180deg)}
+.face b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.3rem;line-height:1.15}
+.face .hint{margin-top:auto;font-size:.9rem;color:var(--muted)}
+.back .hint{color:#1D1A4A}
+@media (prefers-reduced-motion:reduce){.fc-in{transition:none}}
+/* Token jars */
+.roles{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.25rem 0}
+.roles button{font:600 1rem "Figtree",sans-serif;color:var(--ink);background:var(--surface);border:2px solid var(--ink);border-radius:2rem;padding:.55rem 1.1rem;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem}
+.roles button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.sw{width:1rem;height:1rem;border-radius:50%;border:2px solid var(--ink);display:inline-block}
+.roles button[aria-pressed="true"] .sw{border-color:var(--bg)}
+.jars{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:36rem}
+.jar{background:none;border:0;padding:0;font:inherit;color:inherit;text-align:center;cursor:pointer}
+.glass{display:flex;height:12rem;border:3px solid var(--ink);border-radius:.4rem .4rem 1.5rem 1.5rem;background:var(--surface);flex-wrap:wrap-reverse;align-content:flex-start;gap:4px;padding:8px;overflow:hidden}
+.tok{width:1.1rem;height:1.1rem;border-radius:50%;border:2px solid var(--ink);flex:none}
+.jar strong{display:block;margin-top:.6rem;font-family:"Bricolage Grotesque",sans-serif;font-size:1.2rem}
+.jar .n{font-weight:600;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.tok{animation:drop .4s ease-in}@keyframes drop{from{transform:translateY(-140px)}}}
+/* Digital layer + label */
+.digital{padding:1rem 0 3rem}
+.dl{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));align-items:center;background:var(--surface);border:2px solid var(--ink);border-radius:1.5rem;padding:clamp(1.5rem,4vw,2.5rem)}
+.dl h2{font-size:clamp(1.7rem,4.5vw,2.6rem);font-weight:800;letter-spacing:-.02em;margin-bottom:.6rem}
+.dl p{margin:0;color:var(--muted)}
+.qr{justify-self:center;width:min(100%,12rem);aspect-ratio:1;border:3px dashed var(--ink);border-radius:1rem;display:grid;place-items:center;text-align:center;padding:1rem;font-weight:600;color:var(--muted)}
+.label{padding:1rem 0 3rem}
+.label .sheet{max-width:40rem;background:var(--surface);border:2px solid var(--ink);border-left:12px solid var(--blue);border-radius:.5rem 1.25rem 1.25rem .5rem;padding:clamp(1.25rem,4vw,2.25rem)}
+.label h2{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;letter-spacing:-.02em}
+.label h3{font-size:1.5rem;font-weight:500;margin:.35rem 0 0;color:var(--blue)}
+.label h4{margin:1.4rem 0 .25rem;font-size:1rem;font-weight:600;color:var(--muted)}
+.label p{margin:0}
+@media (prefers-reduced-motion:no-preference){
+  .hero h1{animation:rise .7s ease-out both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+</style>
+</head>
+<body>
+<nav class="tabs" aria-label="Exhibition sections">
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#voices">Perspectives</a></li>
+    <li><a href="#myths">Myth or Evidence</a></li>
+    <li><a href="#conclusion">Verdict</a></li>
+    <li><a href="#vote">Vote</a></li>
+    <li><a href="#ai-use">AI Use</a></li>
+    <li><a href="#video">Video</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+<header class="hero" data-v="home">
+  <div class="wrap">
+    <div class="tag">Year 9 Exhibition</div>
+    <h1>Beyond The Headset<span>Community or Isolation?</span></h1>
+    <p class="tagline">Online multiplayer games connect millions across screens—but are they bringing Year 9 students closer together or pulling them apart in the real world?</p>
+
+    <div class="lobby">
+      <svg id="scene" viewBox="0 0 360 190" role="img" aria-label="Five players, shown together in one squad or apart in separate rooms depending on the slider"></svg>
+      <label for="mix"><span>One squad</span><span>Five rooms</span></label>
+      <input id="mix" type="range" min="0" max="100" value="0" aria-describedby="state">
+      <p id="state" aria-live="polite"></p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="question" data-v="home">
+    <div class="wrap">
+      <div class="card">
+        <h2>Does online multiplayer gaming build real friendships, or leave students more alone?</h2>
+        <p>The big question behind this exhibition</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="persp" id="perspectives" data-v="voices">
+    <div class="wrap">
+      <h2>Perspectives Zone</h2>
+      <p>Three groups see the same game night very differently. Here is what each one notices, and why.</p>
+      <div class="chat">
+        <article class="msg s">
+          <span class="who">Students</span>
+          <h3>Gaming is a main social hub for teamwork, communication and unwinding after school.</h3>
+          <h4>Why they see it this way</h4>
+          <p>Multiplayer games give teens a shared goal, instant voice chat with friends, and a low-pressure space to hang out when they can’t meet in person.</p>
+        </article>
+        <article class="msg p right">
+          <span class="who">Parents</span>
+          <h3>Gaming often disrupts healthy sleep routines and reduces quality time with family at home.</h3>
+          <h4>Why they see it this way</h4>
+          <p>Parents see the immediate offline effects: late-night screen use, irritability from lack of sleep, and teens spending hours alone in their bedrooms.</p>
+        </article>
+        <article class="msg t">
+          <span class="who">Teachers</span>
+          <h3>Heavy gaming can lower classroom focus, affect academic performance and weaken face-to-face communication skills.</h3>
+          <h4>Why they see it this way</h4>
+          <p>Teachers observe students’ daytime alertness, homework completion, and how comfortably they collaborate in person during lessons.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="flips" id="flipcards" data-v="myths">
+    <div class="wrap">
+      <h2>Myth or evidence?</h2>
+      <p>Test your assumptions. Read each claim, decide, then tap the card to see what we found.</p>
+      <div class="cards">
+        <button type="button" class="fc" aria-pressed="false"><span class="fc-in">
+          <span class="face front"><b>Gamers mostly play alone with strangers.</b><span class="hint">Tap to flip</span></span>
+          <span class="face back"><b>Myth</b><span>Most students use gaming to strengthen friendships they already have, through voice chat and shared goals.</span><span class="hint">Tap to flip back</span></span>
+        </span></button>
+        <button type="button" class="fc" aria-pressed="false"><span class="fc-in">
+          <span class="face front"><b>If gaming is social, it has no downsides.</b><span class="hint">Tap to flip</span></span>
+          <span class="face back"><b>Myth</b><span>Excessive late-night play contributes to sleep loss and lower focus in class.</span><span class="hint">Tap to flip back</span></span>
+        </span></button>
+        <button type="button" class="fc" aria-pressed="false"><span class="fc-in">
+          <span class="face front"><b>Online gaming replaces real friendships.</b><span class="hint">Tap to flip</span></span>
+          <span class="face back"><b>It depends</b><span>Gaming builds real community when it complements offline friendships instead of replacing face-to-face time and rest.</span><span class="hint">Tap to flip back</span></span>
+        </span></button>
+        <button type="button" class="fc" aria-pressed="false"><span class="fc-in">
+          <span class="face front"><b>Students, parents and teachers all see gaming the same way.</b><span class="hint">Tap to flip</span></span>
+          <span class="face back"><b>Myth</b><span>Students see a social hub. Parents see lost sleep and family time. Teachers see lower focus and weaker face-to-face skills.</span><span class="hint">Tap to flip back</span></span>
+        </span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="verdict" id="verdict" data-v="conclusion">
+    <div class="wrap">
+      <div class="card">
+        <h2>Our verdict</h2>
+        <p>Based on our interviews and secondary research, online multiplayer gaming both connects and isolates students, depending on how it is balanced. Most students use gaming to strengthen existing friendships and build teamwork, but excessive late-night play contributes to sleep loss and lower classroom focus. Ultimately, gaming fosters real community when it complements offline friendships rather than replacing face-to-face interaction and rest.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="vote" data-v="vote">
+    <div class="wrap">
+      <h2>Where do you stand?</h2>
+      <p>Pick who you are, then tap a jar to drop in your one token.</p>
+      <div class="roles" role="group" aria-label="Who are you?">
+        <button type="button" data-r="s" aria-pressed="true"><span class="sw" style="background:#6FDCBF"></span>Student</button>
+        <button type="button" data-r="p" aria-pressed="false"><span class="sw" style="background:#FFC83D"></span>Parent</button>
+        <button type="button" data-r="t" aria-pressed="false"><span class="sw" style="background:#B9BEFF"></span>Teacher</button>
+      </div>
+      <div class="jars">
+        <button type="button" class="jar" data-k="c" data-l="Mostly Connects" aria-label="Add a token to Mostly Connects"><span class="glass"></span><strong>Mostly Connects</strong><span class="n">0</span></button>
+        <button type="button" class="jar" data-k="i" data-l="Mostly Isolates" aria-label="Add a token to Mostly Isolates"><span class="glass"></span><strong>Mostly Isolates</strong><span class="n">0</span></button>
+      </div>
+      <p id="result" aria-live="polite" style="margin-top:1rem;font-weight:600;min-height:1.6em"></p>
+    </div>
+  </section>
+
+  <section class="ai" id="ai" data-v="ai-use">
+    <div class="wrap">
+      <h2>AI behind the investigation</h2>
+      <div class="grid">
+        <article class="box">
+          <h3>How we used AI</h3>
+          <p>We used AI to narrow our research question to Year 9 students, draft neutral interview questions, brainstorm exhibition layouts, and test our final conclusion for weak spots.</p>
+        </article>
+        <article class="box">
+          <h3>How we verified AI</h3>
+          <p>We checked every interview question ourselves to make sure it made sense for our school. We also found and read our own secondary sources instead of trusting AI citations.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="digital" id="digital" data-v="video">
+    <div class="wrap">
+      <div class="dl">
+        <div>
+          <h2>Watch our 60-second explainer</h2>
+          <p>Students narrate our top three findings. Scan the QR code to watch the video.</p>
+        </div>
+        <!-- Replace this box with the QR code image when the video is ready -->
+        <div class="qr" id="qr-slot" role="img" aria-label="Space reserved for the video QR code">QR code goes here</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="label" id="label" data-v="about">
+    <div class="wrap">
+      <div class="sheet">
+        <h2>The Respawn Crew</h2>
+        <h3>Beyond the Headset: Community or Isolation?</h3>
+        <h4>Research question</h4>
+        <p>To what extent does online multiplayer gaming foster genuine social connections versus increase real-world isolation among students?</p>
+        <h4>Description</h4>
+        <p>Online multiplayer games have become the modern after-school hangout, yet students and adults often disagree on their impact. Through interviews with students, parents, and teachers—alongside psychological and educational research—this exhibition explores whether gaming builds genuine friendships or creates offline distance. Visitors can compare three competing viewpoints, test their assumptions with our interactive flip-cards, and add their own voice to our live community vote.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">Beyond The Headset: Community or Isolation? A Year 9 exhibition by The Respawn Crew.</div></footer>
+
+<script>
+(function(){
+  var svg=document.getElementById('scene'),NS='http://www.w3.org/2000/svg';
+  var cols=['#3544F0','#FFC83D','#6FDCBF','#FF7A9A','#B9BEFF'];
+  // together: around a shared centre; apart: one per room
+  var tog=[[130,70],[230,70],[180,110],[140,150],[220,150]];
+  var apart=[[48,50],[180,50],[312,50],[100,140],[260,140]];
+  var rooms=[],dots=[],links=[];
+  function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);svg.appendChild(e);return e}
+  apart.forEach(function(p){rooms.push(el('rect',{x:p[0]-38,y:p[1]-32,width:76,height:64,rx:12,'class':'room'}))});
+  var pairs=[[0,1],[0,2],[1,2],[2,3],[2,4],[3,4]];
+  pairs.forEach(function(){links.push(el('line',{'class':'link'}))});
+  cols.forEach(function(c){dots.push(el('circle',{r:13,fill:c,stroke:'#1D1A4A','stroke-width':2.5}))});
+  var msgs=['Together: one squad, one voice chat, shared goals.',
+            'Mixed: some friends chatting, some playing alone.',
+            'Apart: five screens in five rooms, no one in the same space.'];
+  var st=document.getElementById('state');
+  function draw(v){
+    var t=v/100,pos=[];
+    dots.forEach(function(d,i){
+      var x=tog[i][0]+(apart[i][0]-tog[i][0])*t,y=tog[i][1]+(apart[i][1]-tog[i][1])*t;
+      pos.push([x,y]);d.setAttribute('cx',x);d.setAttribute('cy',y);
+    });
+    links.forEach(function(l,i){
+      var a=pos[pairs[i][0]],b=pos[pairs[i][1]];
+      l.setAttribute('x1',a[0]);l.setAttribute('y1',a[1]);l.setAttribute('x2',b[0]);l.setAttribute('y2',b[1]);
+      l.setAttribute('opacity',Math.max(0,1-t*1.4));
+    });
+    rooms.forEach(function(r){r.setAttribute('opacity',Math.min(1,t*1.5))});
+    st.textContent=msgs[t<.25?0:t<.75?1:2];
+  }
+  var s=document.getElementById('mix'),auto=true,reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function stop(){auto=false;st.setAttribute('aria-live','polite')}
+  s.addEventListener('input',function(){stop();draw(+s.value)});
+  s.addEventListener('pointerdown',stop);
+  draw(0);
+  // Gentle idle loop: the squad drifts apart and back until the visitor touches the slider
+  if(!reduce){
+    st.setAttribute('aria-live','off');
+    var t0=null;
+    (function loop(ts){
+      if(!auto)return;
+      if(t0===null)t0=ts;
+      var v=50-50*Math.cos(((ts-t0)/7000)*2*Math.PI);
+      s.value=v;draw(v);
+      requestAnimationFrame(loop);
+    })(performance.now());
+  }
+
+  // Tabs
+  var tabs=document.querySelectorAll('.tabs a'),views=document.querySelectorAll('[data-v]');
+  function show(){
+    var h=location.hash.slice(1);
+    if(!document.querySelector('.tabs a[href="#'+h+'"]'))h='home';
+    views.forEach(function(v){v.hidden=v.dataset.v!==h});
+    tabs.forEach(function(a){
+      if(a.getAttribute('href')==='#'+h){a.setAttribute('aria-current','page');a.scrollIntoView({inline:'center',block:'nearest'})}
+      else a.removeAttribute('aria-current');
+    });
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange',show);show();
+  // Flip cards
+  document.querySelectorAll('.fc').forEach(function(c){
+    c.addEventListener('click',function(){c.setAttribute('aria-pressed',c.getAttribute('aria-pressed')==='true'?'false':'true')});
+  });
+  // Token jar vote (kept in memory for this visit only)
+  var role='s',colors={s:'#6FDCBF',p:'#FFC83D',t:'#B9BEFF'},names={s:'Student',p:'Parent',t:'Teacher'},tally={c:0,i:0};
+  var rb=document.querySelectorAll('.roles button'),msg=document.getElementById('result');
+  rb.forEach(function(b){b.addEventListener('click',function(){
+    role=b.dataset.r;rb.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+  })});
+  var jars=document.querySelectorAll('.jar'),KEY='bth-vote';
+  function place(k,r){
+    var j=document.querySelector('.jar[data-k="'+k+'"]'),t=document.createElement('span');
+    t.className='tok';t.style.background=colors[r];
+    j.querySelector('.glass').appendChild(t);
+    tally[k]++;j.querySelector('.n').textContent=tally[k];
+  }
+  function lock(){
+    jars.forEach(function(j){j.disabled=true});
+    rb.forEach(function(b){b.disabled=true});
+  }
+  var saved=null;
+  try{saved=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  if(saved&&colors[saved.r]&&tally[saved.k]!==undefined){
+    role=saved.r;
+    rb.forEach(function(x){x.setAttribute('aria-pressed',x.dataset.r===role?'true':'false')});
+    place(saved.k,role);lock();
+    msg.textContent='You have already voted. Each person can vote once.';
+  }
+  jars.forEach(function(j){
+    j.addEventListener('click',function(){
+      if(j.disabled)return;
+      var k=j.dataset.k;
+      place(k,role);lock();
+      try{localStorage.setItem(KEY,JSON.stringify({k:k,r:role}))}catch(e){}
+      msg.textContent=names[role]+' token added to “'+j.dataset.l+'”. Thanks! Each person can vote once.';
+    });
+  });
+})();
+</script>
+</body>
+</html>
